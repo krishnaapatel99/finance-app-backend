@@ -8,9 +8,9 @@ import cors from 'cors';
 const app=express();
 const PORT=process.env.PORT;
 
-
+const allowedorigin=process.env.FRONTEND_URL;
 app.use(cors({
-  origin: process.env.FRONTEND_URL, 
+  origin: allowedorigin, 
   credentials: true
 }));
 
