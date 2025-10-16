@@ -4,6 +4,7 @@ import express from 'express';
 import dbPool from './config/db.js';
 import projectRoute from './src/routes/projectRoute.js';
 import dashboardRoute from './src/routes/dashboardRoute.js';
+import documentRoute from './src/routes/documentRoute.js'
 import cors from 'cors';
 const app=express();
 const PORT=process.env.PORT;
@@ -21,9 +22,13 @@ app.get('/',(req,res)=>{
     console.log("Server is running");
     res.json("Server is running")
 })
+app.get("/ping", (req, res) => {
+  res.json({ status: "Backend is alive" });
+});
 
 app.use("/api",projectRoute);
 app.use("/api",dashboardRoute);
+app.use("/api/documents", documentRoute);
 
 
 app.listen(PORT,()=>{

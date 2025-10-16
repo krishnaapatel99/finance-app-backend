@@ -6,4 +6,4 @@ router.get("/dashboard",getFinanceSummary);
 router.get("/upcomingevents",getUpcomingEventsData);
 
 
-export default router;
+export default router; 

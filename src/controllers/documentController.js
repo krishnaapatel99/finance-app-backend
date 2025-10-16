@@ -9,6 +9,7 @@ export const getAllDocuments = async (req, res) => {
              d.file_url,
              d.doc_type AS type,
              d.upload_date,
+             d.file_size AS size,
              p.projectName AS project
       FROM documents d
       JOIN projects p ON d.project_id = p.project_id
@@ -22,18 +23,18 @@ export const getAllDocuments = async (req, res) => {
   }
 };
 
-// POST - Add new document by URL link
+// POST - Add new document by link
 export const addDocument = async (req, res) => {
   try {
-    const { file_url, type, project } = req.body;
+    const { file_url, type, projectName } = req.body;
 
-    if (!file_url || !type || !project)
+    if (!file_url || !type || !projectName)
       return res.status(400).json({ error: "Missing required fields" });
 
-    // Find project_id from project name
+    // Get project_id from project name
     const projectRes = await pool.query(
       "SELECT project_id FROM projects WHERE projectName = $1",
-      [project]
+      [projectName]
     );
 
     if (projectRes.rows.length === 0)
@@ -41,10 +42,9 @@ export const addDocument = async (req, res) => {
 
     const project_id = projectRes.rows[0].project_id;
 
-    // Extract file name from the link
+    // Extract file name from link
     const file_name = file_url.split("/").pop();
 
-    // Insert into database
     const insertQuery = `
       INSERT INTO documents (project_id, file_name, file_url, doc_type)
       VALUES ($1, $2, $3, $4)
@@ -58,7 +58,7 @@ export const addDocument = async (req, res) => {
     ]);
 
     res.status(201).json({
-      message: "✅ Document added successfully!",
+      message: "Document added successfully",
       document: newDoc.rows[0],
     });
   } catch (err) {
