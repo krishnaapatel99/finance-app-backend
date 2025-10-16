@@ -31,6 +31,6 @@ app.use("/api",dashboardRoute);
 app.use("/api/documents", documentRoute);
 
 
-app.listen(PORT,()=>{
+app.listen(PORT || 3000,()=>{
     console.log("Server is connected")
 })
