@@ -1,4 +1,4 @@
-import pool from "../db/config.js";
+import pool from '../../config/db.js';
 
 // GET all documents (joined with project names)
 export const getAllDocuments = async (req, res) => {
