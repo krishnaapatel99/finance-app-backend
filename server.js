@@ -12,7 +12,7 @@ const PORT=process.env.PORT;
 const allowedorigin=process.env.FRONTEND_URL;
 app.use(cors({
   origin: allowedorigin, 
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -22,8 +22,14 @@ app.get('/',(req,res)=>{
     console.log("Server is running");
     res.json("Server is running")
 })
-app.get("/ping", (req, res) => {
-  res.json({ status: "Backend is alive" });
+app.get("/ping", async (req, res) => {
+  try {
+    const result = await dbPool.query("SELECT NOW()");
+    res.json({ db_status: "Connected", time: result.rows[0].now });
+  } catch (err) {
+    console.error("DB error:", err);
+    res.status(500).json({ error: "Database not reachable" });
+  }
 });
 
 app.use("/api",projectRoute);
