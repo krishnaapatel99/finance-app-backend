@@ -1,68 +1,49 @@
-import pool from "../db/config.js";
+-- Drop old tables safely
+DROP TABLE IF EXISTS documents CASCADE;
+DROP TABLE IF EXISTS finance CASCADE;
+DROP TABLE IF EXISTS projects CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
-// GET all documents (joined with project names)
-export const getAllDocuments = async (req, res) => {
-  try {
-    const query = `
-      SELECT d.document_id AS id,
-             d.file_name AS name,
-             d.file_url,
-             d.doc_type AS type,
-             d.upload_date,
-             p.projectName AS project
-      FROM documents d
-      JOIN projects p ON d.project_id = p.project_id
-      ORDER BY d.upload_date DESC;
-    `;
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error("Error fetching documents:", err);
-    res.status(500).json({ error: "Failed to fetch documents" });
-  }
-};
+-- USERS TABLE
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role VARCHAR(50) NOT NULL
+);
 
-// POST - Add new document by URL link
-export const addDocument = async (req, res) => {
-  try {
-    const { file_url, type, project } = req.body;
+-- PROJECTS TABLE
+CREATE TABLE projects (
+  project_id SERIAL PRIMARY KEY,
+  projectName VARCHAR(100) NOT NULL,
+  clientName VARCHAR(100) NOT NULL,
+  startDate DATE,
+  endDate DATE,
+  status VARCHAR(20) DEFAULT 'Planned',
+  assignedTeam VARCHAR(255),
+  budget DECIMAL(12,2) DEFAULT 0.00,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-    if (!file_url || !type || !project)
-      return res.status(400).json({ error: "Missing required fields" });
+-- FINANCE TABLE
+CREATE TABLE finance (
+    finance_id SERIAL PRIMARY KEY,
+    project_id INTEGER NOT NULL,
+    type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
+    amount NUMERIC(15, 2) NOT NULL,
+    date DATE NOT NULL,
+    description TEXT,
+    FOREIGN KEY (project_id) REFERENCES projects(project_id)
+);
 
-    // Find project_id from project name
-    const projectRes = await pool.query(
-      "SELECT project_id FROM projects WHERE projectName = $1",
-      [project]
-    );
-
-    if (projectRes.rows.length === 0)
-      return res.status(404).json({ error: "Project not found" });
-
-    const project_id = projectRes.rows[0].project_id;
-
-    // Extract file name from the link
-    const file_name = file_url.split("/").pop();
-
-    // Insert into database
-    const insertQuery = `
-      INSERT INTO documents (project_id, file_name, file_url, doc_type)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *;
-    `;
-    const newDoc = await pool.query(insertQuery, [
-      project_id,
-      file_name,
-      file_url,
-      type,
-    ]);
-
-    res.status(201).json({
-      message: "✅ Document added successfully!",
-      document: newDoc.rows[0],
-    });
-  } catch (err) {
-    console.error("Error adding document:", err);
-    res.status(500).json({ error: "Failed to add document" });
-  }
-};
+-- DOCUMENTS TABLE (✅ with enum-style constraint)
+CREATE TABLE documents (
+    document_id SERIAL PRIMARY KEY,
+    project_id INTEGER NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_url TEXT NOT NULL,
+    doc_type VARCHAR(20) NOT NULL CHECK (doc_type IN ('invoice', 'contract', 'receipt', 'other')),  -- ✅ limited options
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(project_id)
+);
