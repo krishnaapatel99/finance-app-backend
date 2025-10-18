@@ -28,16 +28,15 @@ export const addDocument = async (req, res) => {
     const { file_url, type, project } = req.body;
 
     if (!file_url || !type || !project)
-      return res.status(400).jsozn({ error: "Missing required fields" });
+      return res.status(400).json({ error: "Missing required fields" });
 
-    // ✅ Validate type input
+    const normalizedType = type.toLowerCase();
     const allowedTypes = ['invoice', 'contract', 'receipt', 'other'];
-    if (!allowedTypes.includes(type))
+    if (!allowedTypes.includes(normalizedType))
       return res.status(400).json({ error: "Invalid document type" });
 
-    // Get project_id from project name
     const projectRes = await pool.query(
-      "SELECT project_id FROM projects WHERE projectName = $1",
+      "SELECT project_id FROM projects WHERE projectname = $1",
       [project]
     );
 
@@ -45,21 +44,19 @@ export const addDocument = async (req, res) => {
       return res.status(404).json({ error: "Project not found" });
 
     const project_id = projectRes.rows[0].project_id;
-
-    // Extract file name
     const file_name = file_url.split("/").pop();
 
     const insertQuery = `
-      INSERT INTO documents (project_id, file_name, file_url, doc_type )
+      INSERT INTO documents (project_id, file_name, file_url, doc_type)
       VALUES ($1, $2, $3, $4)
       RETURNING *;
     `;
+
     const newDoc = await pool.query(insertQuery, [
       project_id,
       file_name,
       file_url,
-      type,
-    
+      normalizedType,
     ]);
 
     res.status(201).json({
