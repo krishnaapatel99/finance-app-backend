@@ -26,17 +26,16 @@ CREATE TABLE projects (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- FINANCE TABLE
-CREATE TABLE finance (
-    finance_id SERIAL PRIMARY KEY,
-    project_id INTEGER NOT NULL,
-    type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
-    amount NUMERIC(15, 2) NOT NULL,
-    date DATE NOT NULL,
-    description TEXT,
-    FOREIGN KEY (project_id) REFERENCES projects(project_id)
+  CREATE TABLE finance (
+  finance_id SERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES projects(project_id),
+  type VARCHAR(10) NOT NULL,         -- 'income' or 'expense'
+  client_name VARCHAR(255),
+  amount DECIMAL(10,2) NOT NULL,
+  date_received DATE NOT NULL,
+  payment_mode VARCHAR(50),
+  notes TEXT
 );
-
 -- DOCUMENTS TABLE (✅ with enum-style constraint)
 CREATE TABLE documents (
     document_id SERIAL PRIMARY KEY,

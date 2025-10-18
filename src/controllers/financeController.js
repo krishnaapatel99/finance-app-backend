@@ -4,10 +4,12 @@ import pool from "../config/db.js";
 export const addIncome = async (req, res) => {
   try {
     const { project_id, client_name, amount, date_received, payment_mode, notes } = req.body;
+
     const query = `
       INSERT INTO finance (project_id, type, client_name, amount, date_received, payment_mode, notes)
       VALUES ($1, 'income', $2, $3, $4, $5, $6) RETURNING *`;
     const values = [project_id, client_name, amount, date_received, payment_mode, notes];
+
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
@@ -20,10 +22,12 @@ export const addIncome = async (req, res) => {
 export const addExpense = async (req, res) => {
   try {
     const { project_id, client_name, amount, date_received, payment_mode, notes } = req.body;
+
     const query = `
       INSERT INTO finance (project_id, type, client_name, amount, date_received, payment_mode, notes)
       VALUES ($1, 'expense', $2, $3, $4, $5, $6) RETURNING *`;
     const values = [project_id, client_name, amount, date_received, payment_mode, notes];
+
     const result = await pool.query(query, values);
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
@@ -32,16 +36,17 @@ export const addExpense = async (req, res) => {
   }
 };
 
-// Get all finance data
+// Get all finance records
 export const getFinance = async (req, res) => {
   try {
     const query = `
-      SELECT f.*, p.projectname AS project_name 
+      SELECT f.*, p."projectName" AS project_name
       FROM finance f
       JOIN projects p ON f.project_id = p.project_id
-      ORDER BY f.date_received DESC`;
-    const result = await pool.query(query);
+      ORDER BY f.date_received DESC
+    `;
 
+    const result = await pool.query(query);
     const income = result.rows.filter(r => r.type === "income");
     const expense = result.rows.filter(r => r.type === "expense");
 
@@ -61,7 +66,9 @@ export const updateFinance = async (req, res) => {
     const query = `
       UPDATE finance
       SET project_id=$1, client_name=$2, amount=$3, date_received=$4, payment_mode=$5, notes=$6
-      WHERE finance_id=$7 RETURNING *`;
+      WHERE finance_id=$7
+      RETURNING *
+    `;
     const values = [project_id, client_name, amount, date_received, payment_mode, notes, id];
 
     const result = await pool.query(query, values);

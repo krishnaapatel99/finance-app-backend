@@ -9,15 +9,19 @@ import {
 
 const router = express.Router();
 
-// Fetch all finance
-router.get("/", getFinance);
-
-// Add income/expense separately
+// Income routes
 router.post("/income/add", addIncome);
+
+// Expense routes
 router.post("/expense/add", addExpense);
 
-// Update & Delete
+// Fetch all finance data
+router.get("/", getFinance);
+
+// Update record
 router.put("/update/:id", updateFinance);
+
+// Delete record
 router.delete("/delete/:id", deleteFinance);
 
 export default router;
