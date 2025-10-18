@@ -25,10 +25,10 @@ export const getAllDocuments = async (req, res) => {
 // ✅ POST - Add a new document
 export const addDocument = async (req, res) => {
   try {
-    const { file_url, type, projectName, size } = req.body;
+    const { file_url, type, project } = req.body;
 
-    if (!file_url || !type || !projectName)
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!file_url || !type || !project)
+      return res.status(400).jsozn({ error: "Missing required fields" });
 
     // ✅ Validate type input
     const allowedTypes = ['invoice', 'contract', 'receipt', 'other'];
@@ -38,7 +38,7 @@ export const addDocument = async (req, res) => {
     // Get project_id from project name
     const projectRes = await pool.query(
       "SELECT project_id FROM projects WHERE projectName = $1",
-      [projectName]
+      [project]
     );
 
     if (projectRes.rows.length === 0)
@@ -50,7 +50,7 @@ export const addDocument = async (req, res) => {
     const file_name = file_url.split("/").pop();
 
     const insertQuery = `
-      INSERT INTO documents (project_id, file_name, file_url, doc_type, )
+      INSERT INTO documents (project_id, file_name, file_url, doc_type )
       VALUES ($1, $2, $3, $4)
       RETURNING *;
     `;
