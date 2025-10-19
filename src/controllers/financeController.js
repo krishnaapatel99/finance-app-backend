@@ -1,40 +1,66 @@
 import pool from '../../config/db.js'
 
-// Add Income
 export const addIncome = async (req, res) => {
+  console.log("=== addIncome Called ===");
+  console.log("Request body:", req.body);
+
   try {
     const { project_id, client_name, amount, date_received, payment_mode, notes } = req.body;
 
+    console.log("Parsed Fields:", {
+      project_id, client_name, amount, date_received, payment_mode, notes
+    });
+
     const query = `
       INSERT INTO finance (project_id, type, client_name, amount, date_received, payment_mode, notes)
-      VALUES ($1, 'income', $2, $3, $4, $5, $6) RETURNING *`;
+      VALUES ($1, 'income', $2, $3, $4, $5, $6) RETURNING *
+    `;
     const values = [project_id, client_name, amount, date_received, payment_mode, notes];
 
+    console.log("SQL Query:", query);
+    console.log("Values:", values);
+
     const result = await pool.query(query, values);
+    console.log("Insert Result:", result.rows[0]);
+
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Error adding income" });
+    console.error("DB Error in addIncome:", err);
+    res.status(500).json({ success: false, message: err.message || "Error adding income" });
   }
 };
 
-// Add Expense
 export const addExpense = async (req, res) => {
+  console.log("=== addExpense Called ===");
+  console.log("Request body:", req.body);
+
   try {
     const { project_id, client_name, amount, date_received, payment_mode, notes } = req.body;
 
+    console.log("Parsed Fields:", {
+      project_id, client_name, amount, date_received, payment_mode, notes
+    });
+
     const query = `
       INSERT INTO finance (project_id, type, client_name, amount, date_received, payment_mode, notes)
-      VALUES ($1, 'expense', $2, $3, $4, $5, $6) RETURNING *`;
+      VALUES ($1, 'expense', $2, $3, $4, $5, $6) RETURNING *
+    `;
     const values = [project_id, client_name, amount, date_received, payment_mode, notes];
 
+    console.log("SQL Query:", query);
+    console.log("Values:", values);
+
     const result = await pool.query(query, values);
+    console.log("Insert Result:", result.rows[0]);
+
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Error adding expense" });
+    console.error("DB Error in addExpense:", err);
+    res.status(500).json({ success: false, message: err.message || "Error adding expense" });
   }
 };
+
+
 
 // Get all finance records
 export const getFinance = async (req, res) => {
