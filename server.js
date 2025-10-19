@@ -10,7 +10,7 @@ import cors from 'cors';
 const app=express();
 const PORT=process.env.PORT;
 
-const allowedorigin=process.env.FRONTEND_URL;
+const allowedorigin=process.env.FRONTEND_URL || "http://localhost:5173";
 app.use(cors({
   origin: allowedorigin, 
   credentials: true,
