@@ -62,6 +62,7 @@ export const addExpense = async (req, res) => {
 
 
 
+
 // Get all finance records
 export const getFinance = async (req, res) => {
   try {
