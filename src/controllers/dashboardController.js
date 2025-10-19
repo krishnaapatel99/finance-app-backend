@@ -4,7 +4,6 @@ import pool from "../config/db.js";
 
 export const getFinanceSummary = async (req, res) => {
   try {
-    // Query total revenue from projects table and total expense from finance table
     const query = `
       WITH revenue AS (
         SELECT COALESCE(SUM(budget), 0) AS total_revenue
@@ -16,16 +15,15 @@ export const getFinanceSummary = async (req, res) => {
         WHERE type = 'expense'
       )
       SELECT 
-        revenue.total_revenue,
+        revenue.total_revenue AS total_income,  -- 👈 renamed
         expense.total_expense,
         (revenue.total_revenue - expense.total_expense) AS net_profit
       FROM revenue, expense;
     `;
 
     const result = await pool.query(query);
-
     const summary = result.rows[0] || {
-      total_revenue: 0,
+      total_income: 0,
       total_expense: 0,
       net_profit: 0,
     };
@@ -34,7 +32,7 @@ export const getFinanceSummary = async (req, res) => {
   } catch (error) {
     console.error("❌ Error calculating finance summary:", error.message);
     return res.status(500).json({
-      total_revenue: 0,
+      total_income: 0,
       total_expense: 0,
       net_profit: 0,
       error: "Internal server error",
