@@ -67,22 +67,24 @@ export const addExpense = async (req, res) => {
 export const getFinance = async (req, res) => {
   try {
     const query = `
-      SELECT f.*, p."projectName" AS project_name
+      SELECT f.*, p.projectname AS project_name
       FROM finance f
       JOIN projects p ON f.project_id = p.project_id
       ORDER BY f.date_received DESC
     `;
 
     const result = await pool.query(query);
+
     const income = result.rows.filter(r => r.type === "income");
     const expense = result.rows.filter(r => r.type === "expense");
 
     res.json({ income, expense });
   } catch (err) {
-    console.error(err);
+    console.error("Error in getFinance:", err);
     res.status(500).json({ success: false, message: "Error fetching finance data" });
   }
 };
+
 
 // Update finance record
 export const updateFinance = async (req, res) => {
