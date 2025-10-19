@@ -1,4 +1,4 @@
-import pool from "../config/db.js";
+import pool from '../../config/db.js'
 
 // Add Income
 export const addIncome = async (req, res) => {
