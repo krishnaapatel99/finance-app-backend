@@ -1,7 +1,5 @@
 import pool from "../../config/db.js";
 
-import pool from "../config/db.js";
-
 export const getFinanceSummary = async (req, res) => {
   try {
     const query = `
@@ -15,7 +13,7 @@ export const getFinanceSummary = async (req, res) => {
         WHERE type = 'expense'
       )
       SELECT 
-        revenue.total_revenue AS total_income,  -- 👈 renamed
+        revenue.total_revenue AS total_income,  
         expense.total_expense,
         (revenue.total_revenue - expense.total_expense) AS net_profit
       FROM revenue, expense;
