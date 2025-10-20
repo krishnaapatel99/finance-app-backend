@@ -68,8 +68,7 @@ export const deleteProject = async (req, res) => {
     res.status(500).json({ success: false, message: "Error deleting record" });
   }
 };
-// controllers/projectController.js
-import pool from "../config/db.js";
+
 
 export const updateProject = async (req, res) => {
   try {
