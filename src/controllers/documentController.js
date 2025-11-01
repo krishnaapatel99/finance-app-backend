@@ -99,3 +99,13 @@ export const deleteDocument = async (req, res) => {
   }
 };
 
+export const getDocumentData = async (req, res) => {
+  try {
+    const query = "SELECT * FROM documents";
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("❌ Error fetching document data:", err);
+    res.status(500).json({ error: "Failed to fetch document data" });
+  }
+};
