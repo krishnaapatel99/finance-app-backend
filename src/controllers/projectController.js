@@ -83,37 +83,36 @@ export const updateProject = async (req, res) => {
       budget,
     } = req.body;
 
-    // Build the update query dynamically (so partial updates work too)
     const fields = [];
     const values = [];
     let index = 1;
 
     if (projectName) {
-      fields.push(`"projectName" = $${index++}`);
+      fields.push(`projectname = $${index++}`);
       values.push(projectName);
     }
     if (clientName) {
-      fields.push(`"clientName" = $${index++}`);
+      fields.push(`clientname = $${index++}`);
       values.push(clientName);
     }
     if (startDate) {
-      fields.push(`"startDate" = $${index++}`);
+      fields.push(`startdate = $${index++}`);
       values.push(startDate);
     }
     if (endDate) {
-      fields.push(`"endDate" = $${index++}`);
+      fields.push(`enddate = $${index++}`);
       values.push(endDate);
     }
     if (status) {
-      fields.push(`"status" = $${index++}`);
+      fields.push(`status = $${index++}`);
       values.push(status);
     }
     if (assignedTeam) {
-      fields.push(`"assignedTeam" = $${index++}`);
+      fields.push(`assignedteam = $${index++}`);
       values.push(assignedTeam);
     }
     if (budget !== undefined) {
-      fields.push(`"budget" = $${index++}`);
+      fields.push(`budget = $${index++}`);
       values.push(budget);
     }
 
@@ -138,7 +137,7 @@ export const updateProject = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Project updated successfully",
+      message: "✅ Project updated successfully",
       project: result.rows[0],
     });
   } catch (error) {
@@ -146,3 +145,4 @@ export const updateProject = async (req, res) => {
     res.status(500).json({ error: "Server error while updating project" });
   }
 };
+
